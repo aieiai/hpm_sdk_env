@@ -7,9 +7,10 @@
 #include "usb_errno.h"
 #include "usb_config.h"
 #include "usb_log.h"
+#include "usb_util.h"
 #include "tx_api.h"
 
-extern TX_BYTE_POOL usb_byte_pool; // define usb_byte_pool and call usb_osal_init first
+extern TX_BYTE_POOL tx_byte_pool; // define tx_byte_pool and call usb_osal_init first
 
 usb_osal_mq_t usb_osal_mq;
 
@@ -17,7 +18,7 @@ usb_osal_thread_t usb_osal_thread_create(const char *name, uint32_t stack_size, 
 {
     TX_THREAD *thread_ptr = TX_NULL;
 
-    tx_byte_allocate(&usb_byte_pool, (VOID **)&thread_ptr, USB_ALIGN_UP(sizeof(TX_THREAD), 4) + stack_size, TX_NO_WAIT);
+    tx_byte_allocate(&tx_byte_pool, (VOID **)&thread_ptr, USB_ALIGN_UP(sizeof(TX_THREAD), 4) + stack_size, TX_NO_WAIT);
     if (thread_ptr == TX_NULL) {
         USB_LOG_ERR("Create thread %s failed\r\n", name);
         while (1) {
@@ -50,7 +51,7 @@ void usb_osal_thread_delete(usb_osal_thread_t thread)
 void usb_osal_thread_schedule_other(void)
 {
     TX_THREAD *current_thread = tx_thread_identify();
-    const UINT old_priority = current_thread->tx_thread_priority;
+    UINT old_priority = current_thread->tx_thread_priority;
 
     tx_thread_priority_change(current_thread, TX_MAX_PRIORITIES - 1, &old_priority);
 
@@ -63,7 +64,7 @@ usb_osal_sem_t usb_osal_sem_create(uint32_t initial_count)
 {
     TX_SEMAPHORE *sem_ptr = TX_NULL;
 
-    tx_byte_allocate(&usb_byte_pool, (VOID **)&sem_ptr, sizeof(TX_SEMAPHORE), TX_NO_WAIT);
+    tx_byte_allocate(&tx_byte_pool, (VOID **)&sem_ptr, sizeof(TX_SEMAPHORE), TX_NO_WAIT);
     if (sem_ptr == TX_NULL) {
         USB_LOG_ERR("Create semaphore failed\r\n");
         while (1) {
@@ -76,6 +77,7 @@ usb_osal_sem_t usb_osal_sem_create(uint32_t initial_count)
 
 usb_osal_sem_t usb_osal_sem_create_counting(uint32_t max_count)
 {
+    (void)max_count;
     return usb_osal_sem_create(0);
 }
 
@@ -115,7 +117,7 @@ usb_osal_mutex_t usb_osal_mutex_create(void)
 {
     TX_MUTEX *mutex_ptr = TX_NULL;
 
-    tx_byte_allocate(&usb_byte_pool, (VOID **)&mutex_ptr, sizeof(TX_MUTEX), TX_NO_WAIT);
+    tx_byte_allocate(&tx_byte_pool, (VOID **)&mutex_ptr, sizeof(TX_MUTEX), TX_NO_WAIT);
     if (mutex_ptr == TX_NULL) {
         USB_LOG_ERR("Create mutex failed\r\n");
         while (1) {
@@ -157,7 +159,7 @@ usb_osal_mq_t usb_osal_mq_create(uint32_t max_msgs)
 {
     TX_QUEUE *queue_ptr = TX_NULL;
 
-    tx_byte_allocate(&usb_byte_pool, (VOID **)&queue_ptr, USB_ALIGN_UP(sizeof(TX_QUEUE), 4) + sizeof(uintptr_t) * max_msgs, TX_NO_WAIT);
+    tx_byte_allocate(&tx_byte_pool, (VOID **)&queue_ptr, USB_ALIGN_UP(sizeof(TX_QUEUE), 4) + sizeof(uintptr_t) * max_msgs, TX_NO_WAIT);
     if (queue_ptr == TX_NULL) {
         USB_LOG_ERR("Create TX_QUEUE failed\r\n");
         while (1) {
@@ -200,7 +202,7 @@ struct usb_osal_timer *usb_osal_timer_create(const char *name, uint32_t timeout_
     TX_TIMER *timer_ptr = TX_NULL;
     struct usb_osal_timer *timer;
 
-    tx_byte_allocate(&usb_byte_pool, (VOID **)&timer, sizeof(struct usb_osal_timer), TX_NO_WAIT);
+    tx_byte_allocate(&tx_byte_pool, (VOID **)&timer, sizeof(struct usb_osal_timer), TX_NO_WAIT);
     if (timer == TX_NULL) {
         USB_LOG_ERR("Create usb_osal_timer failed\r\n");
         while (1) {
@@ -208,7 +210,7 @@ struct usb_osal_timer *usb_osal_timer_create(const char *name, uint32_t timeout_
     }
     memset(timer, 0, sizeof(struct usb_osal_timer));
 
-    tx_byte_allocate(&usb_byte_pool, (VOID **)&timer_ptr, sizeof(TX_TIMER), TX_NO_WAIT);
+    tx_byte_allocate(&tx_byte_pool, (VOID **)&timer_ptr, sizeof(TX_TIMER), TX_NO_WAIT);
     if (timer_ptr == TX_NULL) {
         USB_LOG_ERR("Create TX_TIMER failed\r\n");
         while (1) {
@@ -282,7 +284,7 @@ void *usb_osal_malloc(size_t size)
 {
     CHAR *pointer = TX_NULL;
 
-    tx_byte_allocate(&usb_byte_pool, (VOID **)&pointer, size, TX_WAIT_FOREVER);
+    tx_byte_allocate(&tx_byte_pool, (VOID **)&pointer, size, TX_WAIT_FOREVER);
 
     return pointer;
 }
@@ -311,7 +313,7 @@ void usb_osal_init(uint8_t *mem, uint32_t mem_size)
 {
     usb_osal_thread_t thread;
 
-    tx_byte_pool_create(&usb_byte_pool, "usb byte pool", mem, mem_size);
+    tx_byte_pool_create(&tx_byte_pool, "usb byte pool", mem, mem_size);
 
     thread = usb_osal_thread_create("usb_osal", 2048, 10, usb_osal_thread, NULL);
     if (thread == NULL) {

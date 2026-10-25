@@ -90,3 +90,7 @@ endif()
 if(CONFIG_RTTHREAD_NANO)
   sdk_src(osal/usb_osal_rtthread.c)
 endif()
+
+if(CONFIG_ECLIPSE_THREADX)
+  sdk_src(osal/usb_osal_threadx.c)
+endif()
