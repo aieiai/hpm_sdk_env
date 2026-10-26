@@ -8,6 +8,7 @@ sdk_inc(core)
 sdk_inc(class/cdc)
 sdk_inc(class/dfu)
 sdk_inc(class/hid)
+sdk_inc(class/gamepad)
 sdk_inc(class/midi)
 sdk_inc(class/msc)
 sdk_inc(class/audio)
@@ -31,7 +32,7 @@ endif()
 endif()
 
 if(CONFIG_USB_DEVICE_CDC_ACM OR CONFIG_USB_DEVICE_CDC_ECM
-    OR CONFIG_USB_DEVICE_DFU OR CONFIG_USB_DEVICE_HID OR CONFIG_USB_DEVICE_MSC
+    OR CONFIG_USB_DEVICE_DFU OR CONFIG_USB_DEVICE_HID OR CONFIG_USB_DEVICE_MSC OR CONFIG_USB_DEVICE_GAMEPAD
     OR CONFIG_USB_DEVICE_AUDIO OR CONFIG_USB_DEVICE_VIDEO
     OR CONFIG_USB_DEVICE_RNDIS OR CONFIG_USB_DEVICE_MIDI)
   set(CONFIG_CHERRYUSB_DEVICE 1)
@@ -44,6 +45,7 @@ if(CONFIG_CHERRYUSB_DEVICE)
   sdk_src_ifdef(CONFIG_USB_DEVICE_CDC_ECM class/cdc/usbd_cdc_ecm.c)
   sdk_src_ifdef(CONFIG_USB_DEVICE_DFU class/dfu/usbd_dfu.c)
   sdk_src_ifdef(CONFIG_USB_DEVICE_HID class/hid/usbd_hid.c)
+  sdk_src_ifdef(CONFIG_USB_DEVICE_GAMEPAD class/gamepad/usbd_gamepad.c)
   sdk_src_ifdef(CONFIG_USB_DEVICE_MSC class/msc/usbd_msc.c)
   sdk_src_ifdef(CONFIG_USB_DEVICE_AUDIO class/audio/usbd_audio.c)
   sdk_src_ifdef(CONFIG_USB_DEVICE_VIDEO class/video/usbd_video.c)
