@@ -3,7 +3,6 @@
 
 add_subdirectory_ifdef(CONFIG_ENET_PHY enet_phy)
 add_subdirectory_ifdef(CONFIG_TSW_PHY tsw_phy)
-add_subdirectory(debug_console)
 add_subdirectory_ifdef(CONFIG_CAMERA camera)
 add_subdirectory_ifdef(CONFIG_CODEC codec)
 add_subdirectory_ifdef(CONFIG_USB_DEVICE usb/device)
@@ -29,5 +28,18 @@ add_subdirectory_ifdef(CONFIG_HPM_I2C i2c)
 add_subdirectory_ifdef(CONFIG_HPM_JPEG jpeg)
 add_subdirectory_ifdef(CONFIG_HPM_SEGMENT_LED segment_led)
 add_subdirectory_ifdef(CONFIG_HPM_LOG log)
-add_subdirectory(eeprom_hal)
+add_subdirectory_ifdef(CONFIG_DEBUG_CONSOLE debug_console)
+
+
+# Board headers enable the UART debug console by default.
+# Keep it disabled unless the application explicitly enables the debug console component or overrides this setting.
+if(NOT CONFIG_DEBUG_CONSOLE AND NOT DEFINED CONFIG_NDEBUG_CONSOLE)
+    sdk_compile_definitions(-DCONFIG_NDEBUG_CONSOLE=1)
+endif()
+
+
+add_subdirectory_ifdef(CONFIG_EEPROM_HAL_I2C eeprom_hal)
+add_subdirectory_ifdef(CONFIG_EEPROM_HAL_SPI eeprom_hal)
+add_subdirectory_ifdef(CONFIG_EEPROM_HAL_EMULATION eeprom_hal)
+
 
