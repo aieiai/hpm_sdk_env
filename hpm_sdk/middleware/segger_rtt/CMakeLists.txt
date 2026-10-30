@@ -6,5 +6,7 @@ sdk_inc(RTT)
 
 sdk_src(RTT/SEGGER_RTT.c)
 sdk_src(RTT/SEGGER_RTT_printf.c)
+if(CONFIG_SEGGER_RTT_PRINTF)
 sdk_ses_src(Syscalls/SEGGER_RTT_Syscalls_SES.c)
 sdk_gcc_src(Syscalls/SEGGER_RTT_Syscalls_GCC.c)
+endif()
