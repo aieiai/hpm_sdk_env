@@ -608,6 +608,7 @@ struct usb_webusb_descriptor {
     uint8_t vendor_code;
     const uint8_t *string;
     uint32_t string_len;
+    uint8_t req_limit;
 } __PACKED;
 
 struct usb_bos_descriptor {

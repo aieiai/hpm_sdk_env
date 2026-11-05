@@ -866,10 +866,14 @@ static int usbd_vendor_request_handler(uint8_t busid, struct usb_setup_packet *s
         if (setup->bRequest == g_usbd_core[busid].descriptors->webusb_url_descriptor->vendor_code) {
             switch (setup->wIndex) {
                 case WEBUSB_REQUEST_GET_URL:
-                    desclen = g_usbd_core[busid].descriptors->webusb_url_descriptor->string_len;
-                    *data = (uint8_t *)g_usbd_core[busid].descriptors->webusb_url_descriptor->string;
-                    //memcpy(*data, g_usbd_core[busid].descriptors->webusb_url_descriptor->string, desclen);
-                    *len = desclen;
+                    static volatile uint8_t req_cnt = 0;
+                    if (req_cnt < g_usbd_core[busid].descriptors->webusb_url_descriptor->req_limit) {
+                        req_cnt++;
+                        desclen = g_usbd_core[busid].descriptors->webusb_url_descriptor->string_len;
+                        *data = (uint8_t *)g_usbd_core[busid].descriptors->webusb_url_descriptor->string;
+                        //memcpy(*data, g_usbd_core[busid].descriptors->webusb_url_descriptor->string, desclen);
+                        *len = desclen;
+                    }
                     return 0;
                 default:
                     return -1;
