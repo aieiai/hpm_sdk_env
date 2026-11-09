@@ -1,1 +1,25 @@
 .DS_Store
+
+__pycache__
+*.log
+.vscode
+
+# HPM SDK generated build/IDE project directories
+**/*_ram_debug/
+**/*_ram_release/
+**/*_flash_xip_debug/
+**/*_flash_xip_release/
+**/*_flash_sdram_xip_debug/
+**/*_flash_sdram_xip_release/
+**/*_flash_uf2_debug/
+**/*_flash_uf2_release/
+**/*_flash_sdram_uf2_debug/
+**/*_flash_sdram_uf2_release/
+**/*_flash_dfu_debug/
+**/*_flash_dfu_release/
+**/*_flash_sdram_dfu_debug/
+**/*_flash_sdram_dfu_release/
+**/*_sec_core_img_debug/
+**/*_sec_core_img_release/
+**/*_flash_xip_hybrid_debug/
+**/*_flash_xip_hybrid_release/

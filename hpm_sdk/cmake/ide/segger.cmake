@@ -937,15 +937,6 @@ function(generate_ses_project)
         endif()
     endforeach()
 
-    set(target_sources "")
-    foreach(src IN ITEMS ${target_source_files})
-        if("${target_sources}" STREQUAL "")
-            set(target_sources ${src})
-        else()
-            set(target_sources "${target_sources},${src}")
-        endif()
-    endforeach()
-
     get_property(target_linker_script TARGET ${APP_ELF_NAME} PROPERTY LINK_DEPENDS)
     if(${SES_LINKER_VARIANT} STREQUAL "gnu")
         set(target_linker ${target_linker_script})
@@ -984,8 +975,29 @@ function(generate_ses_project)
     endforeach()
 
     if(NOT lib_io_type)
-        set(lib_io_type STD)
+        set(lib_io_type RTT)
     endif()
+
+    # The SES STD library I/O requires application-provided file hooks. Default
+    # to RTT so printf-based samples link without per-application setup.
+    if("${lib_io_type}" STREQUAL "RTT")
+        set(ses_rtt_dir "${HPM_SDK_BASE}/middleware/segger_rtt")
+        list(APPEND target_source_files
+            "${ses_rtt_dir}/RTT/SEGGER_RTT.c"
+            "${ses_rtt_dir}/RTT/SEGGER_RTT_printf.c")
+        list(APPEND target_ses_include_dirs
+            "${ses_rtt_dir}/Config"
+            "${ses_rtt_dir}/RTT")
+    endif()
+
+    set(target_sources "")
+    foreach(src IN ITEMS ${target_source_files})
+        if("${target_sources}" STREQUAL "")
+            set(target_sources ${src})
+        else()
+            set(target_sources "${target_sources},${src}")
+        endif()
+    endforeach()
 
     if(NOT debug_target_conn)
         set(debug_target_conn ${SES_DBG_CONN_GDB_SRV})
